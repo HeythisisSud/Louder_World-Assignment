@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 
@@ -17,7 +18,7 @@ model Event{
   id       String  @id @default(uuid())
   title     String
   dateTime  DateTime?
-  venueName String
+  venueName String?
   address  String?
   createdAt DateTime @default(now())
   city      String   @default("Sydney")

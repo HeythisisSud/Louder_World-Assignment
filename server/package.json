@@ -13,11 +13,14 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.2",
+    "cheerio": "^1.1.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "prisma": "^6.19.2"
+    "prisma": "^6.19.2",
+    "puppeteer": "^24.36.1"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.35",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.2.0",
