@@ -24,8 +24,9 @@ model Event{
   city      String   @default("Sydney")
   description String?
   category  String[]
+  organizer  String?
   imageUrl  String?
-
+  price String?
   sourceName  String?
   sourceUrl   String  @unique
 

@@ -1,78 +1,116 @@
 import puppeteer from "puppeteer";
-import * as cheerio from "cheerio"; 
+import * as cheerio from "cheerio";
 
-export async function scrapeEventBriteEvents(){
-    const url = "https://www.eventbrite.com.au/d/australia--sydney/events/";
-    const browser= await puppeteer.launch({ headless: false})
-    const page= await browser.newPage();
-    await page.goto(url, {waitUntil: "networkidle2"});
+import { parseEventbriteDate } from "../utils/parseEventbriteDate";
+import { extractVenue } from "../utils/extractVenue";
+import { extractRawDate } from "../utils/extractRawDate";
+import { extractOrganizer } from "../utils/extractOrganizer";
 
-    const content = await page.content();
+export async function scrapeEventBriteEvents() {
+  const url =
+    "https://www.eventbrite.com.au/d/australia--sydney/all-events/";
 
-    const $= cheerio.load(content)
+  console.log("✅ Starting Eventbrite Scraper...");
 
-    const events: any[] = [];
+  // ✅ Launch browser
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
 
+  // ✅ Load first page
+
+
+  let allEvents: any[] = [];
+
+  // ✅ Scrape multiple pages (enough for assignment demo)
+  const MAX_PAGES = 5;
+
+  for (let currentPage = 1; currentPage <= MAX_PAGES; currentPage++) {
+    const pageUrl = `${url}?page=${currentPage}`;
+
+    console.log(`📄 Scraping Page ${currentPage}...`);
+    await page.goto(pageUrl, { waitUntil: "networkidle2" });
+    await page.waitForFunction(() => document.body.innerText.includes("$"));
+
+    const html = await page.content();
+    const $ = cheerio.load(html);
+
+    // ✅ Loop through event cards
     $(".event-card").each((_, el) => {
-    // ✅ Title
-    const title = $(el).find("h3").text().trim();
+      const title = $(el).find("h3").text().trim();
+      const sourceUrl = $(el).find("a.event-card-link").attr("href");
 
-    // ✅ Event link
-    const sourceUrl = $(el).find("a.event-card-link").attr("href");
+      if (!title || !sourceUrl) return;
 
-    // ✅ Image URL
-    const imageUrl = $(el).find("img.event-card-image").attr("src");
+      // ✅ Image
+      const imageUrl = $(el).find("img.event-card-image").attr("src");
 
-    // ✅ Date/time text
-    const dateText = $(el)
-      .find("p.Typography_body-md-bold__487rx")
-      .first()
-      .text()
-      .trim();
+      // ✅ Category → always array
+      const categoryAttr = $(el)
+        .find("a.event-card-link")
+        .attr("data-event-category");
 
-    // ✅ Venue name (next <p> after date)
-    const venueName = $(el)
-      .find("p.Typography_body-md__487rx")
-      .first()
-      .text()
-      .trim();
+      const category = categoryAttr ? [categoryAttr] : [];
 
-    // ✅ Category (from attribute)
-    const category = $(el)
-      .find("a.event-card-link")
-      .attr("data-event-category");
+      // ✅ Extract card text for regex price
+      const cardText = $(el).text();
 
-    // ✅ Organizer name (last bold text)
-    const organizer = $(el)
-      .find("p.Typography_body-md-bold__487rx")
-      .last()
-      .text()
-      .trim();
+      // ✅ Price extraction
+      const priceMatch =
+        cardText.match(/From\s+\$[0-9]+(\.[0-9]{2})?/)?.[0] ||
+        cardText.match(/\$[0-9]+(\.[0-9]{2})?/)?.[0] ||
+        (cardText.toLowerCase().includes("free") ? "Free" : null);
 
-    // ✅ Only store valid events
-    if (title && sourceUrl) {
-      events.push({
+      const price = priceMatch ? priceMatch.replace("From ", "") : null;
+
+      // ✅ Paragraph lines for date/venue/organizer
+      const allLines = $(el)
+        .find("p")
+        .map((_, p) => $(p).text().trim())
+        .get();
+
+      // ✅ Organizer
+      const organizer = extractOrganizer(allLines);
+
+      // ✅ Date extraction
+      const rawDate = extractRawDate(allLines);
+
+      // ✅ Parsed datetime
+      const dateTime = rawDate ? parseEventbriteDate(rawDate) : null;
+
+      // ✅ Venue + Address
+      const { venueName, address } = extractVenue(allLines);
+
+      // ✅ Push event
+      allEvents.push({
         title,
-        dateText,
+        dateTime,
         venueName,
+        address,
         imageUrl,
         category,
+        price,
         organizer,
-
         city: "Sydney",
         sourceName: "Eventbrite",
         sourceUrl,
-        lastScrapedAt: new Date()
       });
-    }
-  });
-    await browser.close();
-      console.log("Scraped:", events.length, "events");
+    });
 
-    return events;
+    console.log(`✅ Total events collected: ${allEvents.length}`);
 
+    // ✅ Pagination: Next page button
+    
+  }
 
+  // ✅ Remove duplicates by URL
+  allEvents = Array.from(
+    new Map(allEvents.map((e) => [e.sourceUrl, e])).values()
+  );
 
+  await browser.close();
+
+  console.log("✅ Eventbrite scraper finished.");
+  console.log("✅ Total unique events scraped:", allEvents.length);
+
+  return allEvents;
 }
-
-scrapeEventBriteEvents()

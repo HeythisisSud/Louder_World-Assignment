@@ -2,7 +2,8 @@ import express,  {Application} from "express";
 import { Request, Response } from "express";
 import cors from "cors";
 import eventRoutes from "./routes/eventRoutes";
-
+import { scheduleScraperJobs } from "./jobs/scraperJobs";
+import { start } from "node:repl";
 
 const app:Application= express();
 
@@ -18,4 +19,6 @@ app.use("/", (req:Request,res:Response)=>{
 
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
+
+    scheduleScraperJobs();
 })
