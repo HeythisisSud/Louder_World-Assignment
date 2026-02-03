@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { TicketQuery } from "../types/interfaces";
-import { data } from "cheerio/dist/commonjs/api/attributes";
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
 
 
-router.post("/", async (req: Request<{},{},{},TicketQuery>, res: Response) => {
+router.post("/click", async (req: Request<{},{},TicketQuery,{}>, res: Response) => {
 
     try{
-         const { eventId,email,consent}= req.query;
+         const { eventId,email,consent}= req.body;
 
     if (!eventId || !email || consent !== true) {
         return res.status(400).json({ message: "Missing or invalid parameters." });
@@ -20,7 +20,7 @@ router.post("/", async (req: Request<{},{},{},TicketQuery>, res: Response) => {
         data:{
             eventId:eventId as string,
             email: email as string,
-            consent: consent
+            consent: Boolean(consent)
         }
     })
      res.json({

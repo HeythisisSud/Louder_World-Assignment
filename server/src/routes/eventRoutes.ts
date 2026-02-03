@@ -14,34 +14,30 @@ const router = express.Router();
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
-    // ✅ Pagination params
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
 
     const skip = (page - 1) * limit;
 
     // ✅ Total count
-    const total = await prisma.event.count();
+    const totalEvents = await prisma.event.count();
 
     // ✅ Fetch paginated events
     const events = await prisma.event.findMany({
       skip,
       take: limit,
       orderBy: {
-        lastScrapedAt: "desc",
+        dateTime: "asc",
       },
     });
 
-    // ✅ Return paginated response
     res.json({
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
       events,
+      totalEvents,
+      totalPages: Math.ceil(totalEvents / limit),
+      currentPage: page,
     });
   } catch (error) {
-    console.error("Error fetching events:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

@@ -8,43 +8,73 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EventCard from "@/components/EventCard";
 import { format } from "date-fns";
-
-
-
+import TicketModal from "@/components/TicketModal";
 export default function Home() {
+  const router = useRouter();
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
-    fetch("http://localhost:5000/auth/me", {
-      credentials: "include",
-    }).then((res) => {
-      if (!res.ok) router.push("/login");
-    });
+    async function checkAuth() {
+      try {
+        const res = await fetch("http://localhost:5000/auth/me", {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          router.push("/login");
+          return;
+        }
+      } catch (err) {
+        router.push("/login");
+      } finally {
+        setUserLoading(false);
+      }
+    }
+
+    checkAuth();
   }, []);
 
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch("http://localhost:5000/api/events");
-
+        const res = await fetch(
+          `http://localhost:5000/api/events?page=${page}&limit=18`,
+        );
         if (!res.ok) throw new Error("Failed to fetch events");
 
         const data = await res.json();
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          setEvents(data.events || []);
-        }
+
+        setEvents(Array.isArray(data) ? data : data.events || []);
+
+        setTotalPages(data.totalPages);
       } catch (err) {
-        console.error("Error fetching events:", err);
+        console.error(err);
       } finally {
-        setLoading(false);
+        setEventsLoading(false);
       }
     }
 
     fetchEvents();
-  }, []);
-  const router = useRouter();
+  }, [page]);
+  if (userLoading || eventsLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-white">
+        <div className="w-14 h-14 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+
+        <p className="mt-6 text-gray-300 text-sm">
+          Loading Sydney Events Platform...
+        </p>
+      </div>
+    );
+  }
+
+
   const items = [
     {
       label: "About",
@@ -101,38 +131,75 @@ export default function Home() {
   ];
 
   return (
-     
-
     <div className="pt-25" style={{ width: "100%", height: "100vh" }}>
-      <div style={{zIndex: 10 }}>
-        <CardNav
-          items={items}
-          ease="power3.out"
-        />
-
+      <div style={{ zIndex: 10 }}>
+        <CardNav items={items} ease="power3.out" />
       </div>
-        <div className="grid gap-8 mx-10 mt-8 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
-          {events.map((event) => (
-            <EventCard
-  key={event.id}
-  title={event.title}
-  datetime={
-    event.dateTime
-      ? format(new Date(event.dateTime), "EEE, d MMM • h:mm a")
-      : event.dateTime || "Date TBA"
-  }
-  venueName={event.venueName}
-  address={event.address}
-  organizer={event.organizer}
-  price={event.price}
-  sourceName={event.sourceName}
-  imageUrl={event.imageUrl}
-  onGetTickets={() => window.open(event.sourceUrl, "_blank")}
-/>
+      <div className="grid gap-8 mx-10 mt-8 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+        {events.map((event) => (
+          <EventCard
+            key={event.id}
+            title={event.title}
+            datetime={
+              event.dateTime
+                ? format(new Date(event.dateTime), "EEE, d MMM • h:mm a")
+                : event.dateTime || "Date TBA"
+            }
+            venueName={event.venueName}
+            address={event.address}
+            organizer={event.organizer}
+            price={event.price}
+            sourceName={event.sourceName}
+            imageUrl={event.imageUrl}
+            onGetTickets={() => setSelectedEvent(event)}
+          />
+        ))}
+        {selectedEvent && (
+          <TicketModal
+            eventId={selectedEvent.id}
+            eventUrl={selectedEvent.sourceUrl}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
+      </div>
+      <div className="flex mx-auto  justify-center items-center gap-6 mt-12 pb-18 ">
+        {/* Prev Button */}
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="
+      px-5 py-2 rounded-xl
+      bg-white/10 text-white
+      border border-white/20
+      hover:bg-white/20
+      disabled:opacity-40 disabled:cursor-not-allowed
+      transition
+    "
+        >
+          ← Prev
+        </button>
 
-          ))}
-        </div>
+        {/* Page Info */}
+        <p className="text-white font-medium">
+          Page {page} of {totalPages}
+        </p>
+
+        {/* Next Button */}
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="
+      px-5 py-2 rounded-xl
+      bg-white/10 text-white
+      border border-white/20
+      hover:bg-white/20
+      disabled:opacity-40 disabled:cursor-not-allowed
+      transition
+    "
+        >
+          Next →
+        </button>
+      </div>
     </div>
-      
   );
 }
