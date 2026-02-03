@@ -6,3 +6,10 @@ export interface EventInput {
   city?: string;
   description?: string;
 }
+
+
+export interface TicketQuery {
+  eventId: string;
+  email: string;
+  consent?: boolean; // query values are always strings
+}
