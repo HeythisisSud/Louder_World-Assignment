@@ -18,11 +18,11 @@ router.get("/google", (req, res, next) => {
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: "/",
   }),
   (req: Request, res: Response) => {
     // ✅ Redirect back to frontend dashboard
-    res.redirect(`${process.env.FRONTEND_URL}`);
+    res.redirect(`${process.env.FRONTEND_URL}/events`);
   }
 );
 

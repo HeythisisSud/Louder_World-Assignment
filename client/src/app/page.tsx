@@ -1,90 +1,57 @@
 "use client";
-import CardNav from "../components/Navbar";
-import ProfileCard from "../components/ProfileCard";
-import FloatingLines from "../components/FloatingLines";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
+import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 
-export default function Home() {
-  const router = useRouter();
-  useEffect(() => {
-    fetch("http://localhost:5000/auth/me", {
-      credentials: "include",
-    }).then((res) => {
-      if (!res.ok) router.push("/login");
-    });
-  }, []);
-  const items = [
-    {
-      label: "About",
-      bgColor: "#0D0716",
-      textColor: "#fff",
-      links: [
-        {
-          label: "Company",
-          href: "/about/company",
-          ariaLabel: "About Company",
-        },
-        {
-          label: "Careers",
-          href: "/about/careers",
-          ariaLabel: "About Careers",
-        },
-      ],
-    },
-    {
-      label: "Projects",
-      bgColor: "#170D27",
-      textColor: "#fff",
-      links: [
-        {
-          label: "Featured",
-          href: "/projects/featured",
-          ariaLabel: "Featured Projects",
-        },
-        {
-          label: "Case Studies",
-          href: "/projects/case-studies",
-          ariaLabel: "Project Case Studies",
-        },
-      ],
-    },
-    {
-      label: "Contact",
-      bgColor: "#271E37",
-      textColor: "#fff",
-      links: [
-        {
-          label: "Email",
-          href: "mailto:contact@example.com",
-          ariaLabel: "Email us",
-        },
-        { label: "Twitter", href: "https://twitter.com", ariaLabel: "Twitter" },
-        {
-          label: "LinkedIn",
-          href: "https://linkedin.com",
-          ariaLabel: "LinkedIn",
-        },
-      ],
-    },
-  ];
+export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
+
+  function handleGoogleLogin() {
+    setLoading(true);
+
+    window.location.href = "http://localhost:5000/auth/google";
+  }
 
   return (
-    <div style={{ width: "100%", height: "100vh", position: "relative" }}>
+    <div className="min-h-screen flex items-center justify-center px-4">
       
-      <div style={{ position: "relative", zIndex: 10 }}>
-        <CardNav
-          logo="/logo.png"
-          logoAlt="Company Logo"
-          items={items}
-          baseColor="#fff"
-          menuColor="#000"
-          buttonBgColor="#111"
-          buttonTextColor="#fff"
-          ease="power3.out"
-        />
-        
+      <div className="relative w-full max-w-md rounded-3xl p-10 
+        bg-white/10 backdrop-blur-2xl border border-white/20
+        shadow-[0_0_40px_rgba(255,255,255,0.08)]
+        hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]
+        transition duration-300">
+
+        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full 
+          bg-blue-500/30 blur-3xl"></div>
+
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full 
+          bg-purple-500/30 blur-3xl"></div>
+
+        <h1 className="text-3xl font-bold text-center text-white mb-2">
+          Welcome Back 👋
+        </h1>
+
+        <p className="text-gray-300 text-center mb-8 text-sm">
+          Sign in with Google to access your admin dashboard
+        </p>
+
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3
+            py-3 rounded-2xl font-semibold text-black
+            bg-white hover:bg-gray-100
+            active:scale-95 transition duration-200
+            disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <FcGoogle className="text-2xl" />
+
+          {loading ? "Redirecting..." : "Continue with Google"}
+        </button>
+
+        <p className="text-xs text-gray-400 text-center mt-8">
+          Only authorized users can access the dashboard.
+        </p>
       </div>
     </div>
   );

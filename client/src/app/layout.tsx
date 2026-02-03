@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="relative min-h-screen bg-[#0D0716] text-white overflow-hidden">
+      <body className="relative min-h-screen bg-[#0D0716] text-white">
         
         <UniversalBackground />
 
