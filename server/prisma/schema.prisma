@@ -53,8 +53,22 @@ model TicketClick{
 
 
 model User {
-  id    String @id @default(uuid())
-  googleId String @unique
-  name String?
-  email String @unique
+  id        String   @id @default(uuid())
+
+  googleId  String   @unique
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+
+  createdAt DateTime @default(now())
+}
+model Admin {
+  id        String   @id @default(uuid())
+
+  googleId  String   @unique
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+
+  createdAt DateTime @default(now())
 }

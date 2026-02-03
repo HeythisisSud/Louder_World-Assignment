@@ -2,7 +2,19 @@
 import CardNav from "../components/Navbar";
 import ProfileCard from "../components/ProfileCard";
 import FloatingLines from "../components/FloatingLines";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+
 export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    fetch("http://localhost:5000/auth/me", {
+      credentials: "include",
+    }).then((res) => {
+      if (!res.ok) router.push("/login");
+    });
+  }, []);
   const items = [
     {
       label: "About",
