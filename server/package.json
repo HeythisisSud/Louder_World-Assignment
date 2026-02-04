@@ -5,23 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-
     "build": "tsc",
-
     "start": "node dist/src/server.js",
-
     "postinstall": "prisma generate",
-
     "migrate:dev": "prisma migrate dev",
-
     "migrate:deploy": "prisma migrate deploy",
-
     "prisma:studio": "prisma studio",
-
     "scrape": "ts-node src/scrappers/runScrapers.ts",
-
     "lint": "eslint .",
-
     "format": "prettier --write ."
   },
   "keywords": [],
@@ -31,7 +22,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "cheerio": "^1.1.0",
-    "connect-pg-simple": "^10.1.0",
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.6",
     "date-fns": "^4.1.0",
     "express": "^5.2.1",
@@ -45,7 +36,7 @@
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.35",
-    "@types/connect-pg-simple": "^7.0.4",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.18.2",
