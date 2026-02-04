@@ -19,8 +19,11 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/",
+    session: true,
   }),
   (req: Request, res: Response) => {
+    console.log("SESSION ID:", req.sessionID);
+    console.log("SET-COOKIE:", res.getHeader("set-cookie"));
     // ✅ Redirect back to frontend dashboard
     res.redirect(`${process.env.FRONTEND_URL}/events`);
   }
