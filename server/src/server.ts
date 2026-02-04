@@ -9,7 +9,7 @@ import connectPgSimple from "connect-pg-simple";
 import passport from "passport";
 import "./auth/googleStrategy"; // ✅ load strategy
 import authRoutes from "./routes/authRoutes";
-
+import { connectRedis } from "./cache/redisClient";
 const app: Application = express();
 app.set("trust proxy", 1);
 app.use(express.json());
@@ -79,8 +79,9 @@ app.use("/auth", authRoutes);
 app.get("/", (req:Request,res:Response)=>{
     res.send("API is running")
 });
-app.listen(PORT, ()=>{
+app.listen(PORT, async ()=>{
     console.log(`Server is running on port ${PORT}`);
+    await connectRedis()
 
     scheduleScraperJobs();
 })
