@@ -55,6 +55,8 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: "/",
     },
   })
 );

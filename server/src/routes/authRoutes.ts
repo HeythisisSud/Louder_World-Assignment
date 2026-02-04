@@ -15,20 +15,29 @@ router.get("/google", (req, res, next) => {
 /**
  * ✅ Callback after Google login
  */
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/",
-    session: true,
-  }),
-  (req: Request, res: Response) => {
+router.get("/google/callback", (req: Request, res: Response, next) => {
+  res.on("finish", () => {
     console.log("SESSION ID:", req.sessionID);
     console.log("SET-COOKIE:", res.getHeader("set-cookie"));
-    // ✅ Redirect back to frontend dashboard
-    res.redirect(`${process.env.FRONTEND_URL}/events`);
-  }
-);
+  });
 
+  passport.authenticate("google", (err: unknown, user: Express.User) => {
+    if (err || !user) {
+      return res.redirect("/");
+    }
+
+    req.logIn(user, (loginError) => {
+      if (loginError) {
+        return next(loginError);
+      }
+
+      req.session.save(() => {
+        // ✅ Redirect back to frontend dashboard
+        res.redirect(`${process.env.FRONTEND_URL}/events`);
+      });
+    });
+  })(req, res, next);
+});
 /**
  * ✅ Get current logged-in user
  */
