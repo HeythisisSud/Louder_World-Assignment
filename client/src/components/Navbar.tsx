@@ -34,7 +34,7 @@ const CardNav: React.FC<CardNavProps> = ({
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/auth/me", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
       credentials: "include",
     })
       .then((res) => (res.ok ? res.json() : null))

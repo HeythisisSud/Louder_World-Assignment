@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const res = await fetch("http://localhost:5000/auth/me", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           credentials: "include",
         });
 
@@ -44,7 +44,7 @@ export default function Home() {
     async function fetchEvents() {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/events?page=${page}&limit=18`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/events?page=${page}&limit=18`,
         );
         if (!res.ok) throw new Error("Failed to fetch events");
 

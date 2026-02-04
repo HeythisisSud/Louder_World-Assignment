@@ -21,7 +21,7 @@ export default function TicketModal({ eventId, eventUrl, onClose }: Props) {
 
     // ✅ Save click to backend
     try{
-        await fetch("http://localhost:5000/api/tickets/click", {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tickets/click`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
