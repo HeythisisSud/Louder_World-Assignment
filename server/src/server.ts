@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes";
 
 
 const app:Application= express();
+app.set("trust proxy", 1)
 app.use(express.json());
 app.use(
   cors({
@@ -18,7 +19,6 @@ app.use(
     credentials: true,
   })
 );
-app.set("trust proxy", 1)
 app.use(
   session({
     name: "connect.sid",
@@ -27,8 +27,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );
