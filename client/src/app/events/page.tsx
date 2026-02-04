@@ -27,11 +27,11 @@ export default function Home() {
         });
 
         if (!res.ok) {
-          router.push("/login");
+          router.push("/");
           return;
         }
       } catch (err) {
-        router.push("/login");
+        router.push("/");
       } finally {
         setUserLoading(false);
       }
