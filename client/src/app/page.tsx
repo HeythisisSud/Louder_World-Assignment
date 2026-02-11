@@ -28,7 +28,7 @@ export default function LoginPage() {
           bg-purple-500/30 blur-3xl"></div>
 
         <h1 className="text-3xl font-bold text-center text-white mb-2">
-          Hey there 👋
+          Hey there! 👋
         </h1>
 
         <p className="text-gray-300 text-center mb-8 text-sm">

@@ -13,6 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model OtpVerification {
+  id        String   @id @default(uuid())
+  email     String
+  eventId   String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
 
 model Event{
   id       String  @id @default(uuid())
