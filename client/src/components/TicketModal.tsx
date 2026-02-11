@@ -26,7 +26,7 @@ export default function TicketModal({
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/tickets/send-otp",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tickets/send-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export default function TicketModal({
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/tickets/verify-otp",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tickets/verify-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
