@@ -23,7 +23,10 @@ router.get("/google/callback", (req: Request, res: Response, next) => {
 
   passport.authenticate("google", (err: unknown, user: Express.User) => {
     if (err || !user) {
+      console.log("error below")
+      console.log(err)
       return res.redirect("/");
+      
     }
 
     req.logIn(user, (loginError) => {

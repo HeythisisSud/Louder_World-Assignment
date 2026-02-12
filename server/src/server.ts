@@ -77,7 +77,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/auth", authRoutes);
 
 app.get("/", (req:Request,res:Response)=>{
-    res.send("API is running")
+    res.send("API is unning")
 });
 app.listen(PORT, async ()=>{
     console.log(`Server is running on port ${PORT}`);
